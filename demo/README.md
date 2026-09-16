@@ -36,8 +36,11 @@ Two sources for desired application state (`--desired-source`):
 **`fixture`** (default): parse `fixtures/desired.json`. Fast, no
 dependencies. Good for demoing and testing the planner.
 
-**`sdk-build`**: parse `now-sdk build` XML output. Faithful to the
-real workflow — desired state actually comes from the Fluent source:
+**`sdk-build`**: parse `now-sdk build` XML output. Desired state comes
+from the real Fluent source, but the parser only handles the metadata
+types the demo needs — `sys_dictionary` (fields), `sys_security_acl`
+(ACLs, without joining the `sys_security_acl_role` link table), and
+`sys_script` (Business Rules). Other update-set records are ignored:
 
 ```bash
 # One-shot: build the app, then plan
@@ -51,9 +54,11 @@ npm run plan -- \
   --out plan.json
 ```
 
-`app/plan-explicit-deletes.json` lists explicit deletions (removing a
-field from `Table({...})` is not itself a signal to DROP it; deletion
-must be explicit per PRD §8 step 2).
+`app/plan-explicit-deletes.json` lists explicit deletions. The
+prototype does not infer deletes from absence — production `plan`
+would derive delete semantics from the SDK's install-time
+representation (`now-sdk build --generate-deletes`, default `true`).
+See PRD §8 step 2.
 
 ## The forked Hello World app (`app/`)
 

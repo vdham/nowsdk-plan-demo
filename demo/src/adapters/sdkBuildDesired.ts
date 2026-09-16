@@ -5,9 +5,11 @@ import type { DesiredResourceAdapter } from './desiredFixture.js'
 import type { Resource, ResourceRef } from '../model/resource.js'
 
 // Parses `now-sdk build` output under <buildDir>/app/update/*.xml into
-// normalized Resource[]. Deletion is not expressible in Fluent source,
-// so explicit deletes are provided out-of-band via a sibling JSON file
-// (defaults to <buildDir>/../plan-explicit-deletes.json).
+// normalized Resource[]. The prototype models delete intent explicitly
+// via a sibling JSON file rather than reproducing the SDK's full
+// delete-generation semantics — `now-sdk build --generate-deletes`
+// (default: true) is the mechanism production `plan` would consume.
+// See <buildDir>/../plan-explicit-deletes.json for the demo's list.
 
 type XmlNode = Record<string, unknown> & { [k: string]: unknown }
 

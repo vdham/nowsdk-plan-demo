@@ -28,12 +28,27 @@ describe('SN-ACL-004 privilege expansion', () => {
     expect(findings[0]?.severity).toBe('high')
   })
 
-  it('does not flag adding roles', () => {
-    expect(isLessRestrictive(['a'], ['a', 'b'])).toBe(false)
+  it('flags adding a role to a nonempty set (OR semantics broadens access)', () => {
+    expect(isLessRestrictive(['a'], ['a', 'b'])).toBe(true)
   })
 
-  it('does not flag swapping roles', () => {
-    expect(isLessRestrictive(['a'], ['b'])).toBe(false)
+  it('does not flag removing a role without adding (narrows access)', () => {
+    expect(isLessRestrictive(['a', 'b'], ['a'])).toBe(false)
+  })
+
+  it('does not flag going from empty to nonempty (previously ungated, now gated)', () => {
+    expect(isLessRestrictive([], ['a'])).toBe(false)
+  })
+
+  it('flags mixed add+remove as broadening (role hierarchy is not modeled)', () => {
+    // [user] -> [manager]: user loses access, manager gains it. Without
+    // hierarchy modeling we can't tell if this is net broader or narrower;
+    // flagging any-added is the safe default and lets a reviewer decide.
+    expect(isLessRestrictive(['a'], ['b'])).toBe(true)
+  })
+
+  it('does not flag identical role sets', () => {
+    expect(isLessRestrictive(['a', 'b'], ['a', 'b'])).toBe(false)
   })
 })
 

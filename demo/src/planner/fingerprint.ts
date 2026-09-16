@@ -33,7 +33,12 @@ export function targetFingerprint(relevant: Resource[]): string {
 }
 
 export function changeSetDigest(cs: ChangeSet): string {
-  const sorted = [...cs.changes].sort((a, b) =>
+  // Fingerprint only proposed operations. NOOPs are resolver output
+  // but never something a reviewer approves or rejects, and the plan
+  // receipt filters them from `changes[]` — so the digest must match
+  // what's actually shown, not the pre-filter set.
+  const proposed = cs.changes.filter((c) => c.type !== 'NOOP')
+  const sorted = [...proposed].sort((a, b) =>
     a.resourceId < b.resourceId ? -1 : a.resourceId > b.resourceId ? 1 : 0,
   )
   return sha256(canonicalJson({ changes: sorted }))

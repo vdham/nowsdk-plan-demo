@@ -1,5 +1,7 @@
 # now-sdk plan (prototype)
 
+[![CI](https://github.com/vdham/nowsdk-plan-demo/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/vdham/nowsdk-plan-demo/actions/workflows/ci.yml)
+
 A prototype for a proposed `now-sdk plan` command that answers a
 question ServiceNow's SDK doesn't answer today:
 
@@ -24,10 +26,9 @@ local application and a target-instance snapshot, it produces:
 - **Stale-plan detection** via `verify` — if the target drifted after
   review, returns `REPLAN_REQUIRED` with a distinct exit code
 
-An optional `--explain` layer calls Claude Opus 4.7 **after** the
-deterministic engine to annotate each finding with plain-English
-context. The LLM cannot change severity, add findings, or trigger
-rules — verified by test.
+An optional `--explain` layer (see Optional variants below) can attach
+plain-English annotations to findings *after* the deterministic engine
+runs. It never affects rule triggering or severity.
 
 ## Prerequisites
 
@@ -151,7 +152,7 @@ Exit codes: `0` OK · `1` runtime error · `2` `REPLAN_REQUIRED` · `3` `--fail-
 
 ```bash
 cd demo
-npm test        # 36 tests; ~4 seconds
+npm test        # 39 tests; ~4 seconds
 npm run typecheck
 ```
 
@@ -197,8 +198,7 @@ export ANTHROPIC_API_KEY="sk-ant-..."      # or put in your shell profile
 npm run plan:explain -- --target-fixture fixtures/target-v1.json --out plan.json
 ```
 
-Cost per plan: ~$0.05–$0.20 (3 findings, ~1K in + 1K out on Opus 4.7).
-Override the model to save cost:
+Override the model:
 
 ```bash
 ANTHROPIC_EXPLAIN_MODEL=claude-haiku-4-5 npm run plan:explain -- ...
@@ -260,7 +260,7 @@ See [`specs/PRD.md`](specs/PRD.md) §13 and §25 for the boundary and
     ├── app/                     ← forked ServiceNow Hello World SDK app
     ├── src/                     ← CLI, adapters, planner, rules, explain
     ├── fixtures/                ← desired + target v1/v2 JSON
-    └── tests/                   ← 36 tests
+    └── tests/                   ← 39 tests
 ```
 
 ## Status

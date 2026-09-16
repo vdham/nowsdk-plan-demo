@@ -52,12 +52,16 @@ export function renderPlanConsole(
 }
 
 export function renderVerifySuccess(): string {
+  // Verify recomputes only targetFingerprint. The artifact and change
+  // set live in plan.json itself — the receipt IS the proof of what
+  // was reviewed. Verify's job at execution time is to confirm the
+  // target hasn't drifted since review. In production, deeper
+  // validation (artifact provenance, change-set replay) belongs in
+  // the install path (proposed `now-sdk install --plan`).
   return [
     'Plan valid.',
     '',
-    'artifact: PASS',
-    'target: PASS',
-    'change set: PASS',
+    'target: PASS  (target fingerprint matches the reviewed plan)',
     '',
     'Status: READY',
   ].join('\n')

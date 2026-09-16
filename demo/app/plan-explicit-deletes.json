@@ -1,5 +1,5 @@
 {
-  "_comment": "Deletions are not expressible in Fluent source (removing a field from a Table() literal is not a signal to DROP it on the instance). This sibling file explicitly lists resources the local app intends to delete, per PRD §8 step 2.",
+  "_comment": "The prototype does not infer deletes from absence — this file makes delete intent explicit for the demo. Production `plan` would derive delete semantics from the SDK's install-time change representation (now-sdk build --generate-deletes, default true). See PRD §8 step 2.",
   "explicitDeletes": [
     {
       "id": "field:x_helloworld_tableone.datetime_field",

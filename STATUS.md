@@ -1,8 +1,7 @@
 # Project Status
 
-**Last updated:** 2026-09-15
+**Last updated:** 2026-09-16
 **Prototype:** `now-sdk plan` fixture-first demo — see [specs/PRD.md](specs/PRD.md)
-**Working directory:** `/Users/vikramdham/dev/nowsdk-plan/`
 
 ## Overview
 
