@@ -11,7 +11,7 @@ import {
 } from '../planner/fingerprint.js'
 import { evaluateAllRules } from '../rules/index.js'
 import { highestSeverity } from '../model/finding.js'
-import { RULES_VERSION, SCHEMA_VERSION, type PlanReceipt } from '../model/plan.js'
+import { RESOLVER_VERSION, RULES_VERSION, SCHEMA_VERSION, type PlanReceipt } from '../model/plan.js'
 import { renderPlanConsole } from '../output/console.js'
 import { writePlanJson } from '../output/json.js'
 
@@ -70,6 +70,7 @@ export async function runPlan(opts: PlanOptions): Promise<PlanReceipt> {
     targetFingerprint: tFp,
     rulesVersion: RULES_VERSION,
     changeSetDigest: csDigest,
+    resolverVersion: RESOLVER_VERSION,
     // COMPLETE is safe for fixture mode because a fixture is definitionally
     // the whole snapshot the reviewer approved against. A live target
     // adapter that could not retrieve every relevantRef (network partial,

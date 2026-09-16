@@ -4,6 +4,14 @@ import type { ResourceRef } from './resource.js'
 
 export const SCHEMA_VERSION = '0.1-demo'
 export const RULES_VERSION = 'demo-1'
+// Identifies which deployment-resolver semantics produced the change
+// set. Same artifact + same target + different resolver => potentially
+// different change set. Reviewed plans must be re-planned if the
+// resolver bumps, even when nothing else changed. In this prototype
+// the "resolver" is our local SDK-visible metadata comparator; in
+// production it would be whatever install-time resolver `now-sdk
+// install --plan` shares with `plan`.
+export const RESOLVER_VERSION = 'demo-1'
 
 export type PlanSummary = {
   create: number
@@ -18,6 +26,7 @@ export type PlanReceipt = {
   artifactDigest: string
   targetFingerprint: string
   rulesVersion: string
+  resolverVersion: string
   changeSetDigest: string
   coverage: 'COMPLETE' | 'PARTIAL'
   summary: PlanSummary
@@ -39,6 +48,7 @@ export function validatePlanReceipt(x: unknown): asserts x is PlanReceipt {
     'artifactDigest',
     'targetFingerprint',
     'rulesVersion',
+    'resolverVersion',
     'changeSetDigest',
     'coverage',
     'summary',

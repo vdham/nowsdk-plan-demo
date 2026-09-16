@@ -7,9 +7,26 @@
 
 ## 1. Objective
 
-Build a small TypeScript CLI prototype that demonstrates the proposed `now-sdk plan` workflow:
+Build a small TypeScript CLI prototype that demonstrates the proposed `now-sdk plan` workflow.
 
-**build → plan → review/policy → verify approved plan**
+**Prototype flow (this repo):**
+
+```
+build → plan → review/policy → verify target-freshness
+```
+
+**Proposed production flow:**
+
+```
+build → plan → review/policy → install --plan (validates freshness, then mutates)
+```
+
+Note that production `now-sdk verify` is intentionally NOT proposed as a
+separate command. The freshness gate belongs *inside* the proposed
+`now-sdk install --plan <path>` so no TOCTOU gap exists between
+verification and the actual write. `sn-plan-demo verify` in this
+repo is a prototype-only surface that lets the demo *show* stale-plan
+detection without needing to run a real installer.
 
 The prototype should:
 
@@ -766,6 +783,7 @@ Generated `plan.json`:
   "artifactDigest": "A123",
   "targetFingerprint": "T456",
   "rulesVersion": "demo-1",
+  "resolverVersion": "demo-1",
   "changeSetDigest": "C999",
   "coverage": "COMPLETE",
   "summary": {
@@ -774,6 +792,7 @@ Generated `plan.json`:
     "delete": 1,
     "highestSeverity": "high"
   },
+  "relevantRefs": [],
   "changes": [],
   "findings": []
 }
@@ -784,6 +803,16 @@ Definitions:
 ```text
 artifactDigest
 = what desired application was reviewed
+
+resolverVersion
+= which deployment-resolver semantics produced the change set. Same
+  artifact + same target + different resolver = potentially different
+  change set. Production install --plan must refuse a plan whose
+  resolverVersion is incompatible with the current resolver.
+
+relevantRefs
+= exact set of target refs the plan was reviewed against, so verify
+  can recompute targetFingerprint over the same slice.
 
 targetFingerprint
 = what relevant target state it was reviewed against
@@ -847,7 +876,8 @@ Plan: pl_001
 
 # 18. Verify
 
-Implement:
+Implement (**prototype-only** surface — see §1 for why production
+lives inside proposed `install --plan`):
 
 ```bash
 npm run verify -- \
@@ -860,14 +890,25 @@ Expected:
 ```text
 Plan valid.
 
-artifact: PASS
-target: PASS
-change set: PASS
+target: PASS  (target fingerprint matches the reviewed plan)
 
 Status: READY
 ```
 
 No mutation occurs.
+
+Scope of the prototype's verify: **only target-state freshness.** It
+recomputes `targetFingerprint` over the same `relevantRefs` the plan
+reviewed and compares against the value in `plan.json`. It does NOT
+independently recompute `artifactDigest` or `changeSetDigest` — those
+are captured in the plan receipt at review time, and the receipt is
+the proof of what was reviewed.
+
+Production `install --plan` would additionally validate: artifact
+identity (does the deployable artifact still match what was reviewed),
+resolver compatibility (`resolverVersion` on the receipt), approved
+change-set identity, and target freshness — all immediately before
+mutation, no TOCTOU gap.
 
 Then run:
 

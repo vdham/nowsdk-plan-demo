@@ -11,6 +11,11 @@ describe('ServiceNowTargetAdapter (scaffold)', () => {
     expect(() => loadConfigFromEnv({})).toThrow(/now-sdk auth/)
   })
 
+  it('not-implemented error mentions --auth (matches real SDK flag)', async () => {
+    const adapter = new ServiceNowTargetAdapter({ alias: 'my-dev' })
+    await expect(adapter.getResources([])).rejects.toThrow(/--auth my-dev/)
+  })
+
   it('loadConfigFromEnv builds a config when the alias is present', () => {
     const cfg = loadConfigFromEnv({ SN_INSTANCE_ALIAS: 'my-dev' })
     expect(cfg.alias).toBe('my-dev')

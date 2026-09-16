@@ -44,21 +44,40 @@ offline against JSON fixtures.
 
 ## Terminology
 
-Three names to keep straight:
-
-- **`now-sdk plan` / `now-sdk verify`** — the *proposed* commands this
-  prototype is pitching. They **do not exist** in the real ServiceNow
-  SDK today (v4.12.0 ships `auth`, `init`, `download`, `build`,
-  `install`, `dependencies`, `transform`, `clean`, `pack`, `explain`,
-  `query`, `cicd` — no `plan`, no `verify`).
-- **`sn-plan-demo`** — the standalone binary in this repo that
-  demonstrates what the proposed `now-sdk plan` / `now-sdk verify`
-  would do. Independent from `now-sdk`; runs offline against fixtures
-  and read-only SDK output.
+- **`now-sdk plan`** — the *proposed* production command. Does **not**
+  exist in the real ServiceNow SDK today (v4.12.0 ships `auth`, `init`,
+  `download`, `build`, `install`, `dependencies`, `transform`, `clean`,
+  `pack`, `explain`, `query`, `cicd`).
+- **`sn-plan-demo plan`** — the standalone binary in this repo that
+  demonstrates what `now-sdk plan` would do. Runs offline against
+  fixtures and read-only SDK output.
+- **`sn-plan-demo verify`** — a **prototype-only** command used to
+  demonstrate stale-plan detection without performing an install.
+  There is intentionally no proposed `now-sdk verify`. In the
+  production proposal, the same freshness check would live *inside*
+  proposed `now-sdk install --plan <path>`, executed immediately
+  before mutation — splitting verify from install would introduce a
+  TOCTOU gap between the freshness check and the actual write.
 - **`npm run plan`, `npm run verify`, `npm run plan:explain`, etc.**
   — local-development shortcuts that invoke `sn-plan-demo` via `tsx`.
   Used throughout this README because they work immediately after
   `npm install` without a global-install step.
+
+### Prototype vs. production flow
+
+```
+Prototype (this repo):                   Production (proposed):
+
+  now-sdk build                            now-sdk build
+        ↓                                        ↓
+  sn-plan-demo plan                        now-sdk plan
+        ↓                                        ↓
+  review / policy                          review / policy
+        ↓                                        ↓
+  sn-plan-demo verify                      now-sdk install --plan plan.json
+  (target-freshness only,                  (validates freshness inside
+   read-only demonstration)                 install, then mutates)
+```
 
 `npm run plan` and `sn-plan-demo plan` execute identical code — see
 `bin` and `scripts` in [`demo/package.json`](demo/package.json).
