@@ -28,7 +28,7 @@ export type PlanReceipt = {
   rulesVersion: string
   resolverVersion: string
   changeSetDigest: string
-  coverage: 'COMPLETE' | 'PARTIAL'
+  coverage: 'COMPLETE' | 'INCOMPLETE'
   summary: PlanSummary
   // The exact set of target refs the plan was reviewed against. Verify
   // must recompute targetFingerprint over these same refs — otherwise

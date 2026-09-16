@@ -5,12 +5,25 @@
 
 ## Overview
 
-TypeScript CLI prototype demonstrating the proposed
-`build → plan → review → verify` workflow for the ServiceNow SDK.
-Compares a local Hello World application against a target instance
-fixture, produces deterministic `CREATE/MODIFY/DELETE/NOOP` operations,
-evaluates three deterministic risk rules, emits fingerprinted plan
-receipts, and detects stale plans via `REPLAN_REQUIRED`.
+TypeScript CLI prototype demonstrating the **prototype workflow**:
+
+```
+build → plan → review/policy → verify-target-freshness
+```
+
+The **proposed production workflow** is different — freshness lives
+inside install to avoid a TOCTOU gap:
+
+```
+build → plan → review/policy → install --plan
+```
+
+The prototype compares a local Hello World application against a
+target-instance fixture, produces deterministic `CREATE/MODIFY/DELETE/NOOP`
+operations, evaluates three deterministic risk rules, emits fingerprinted
+plan receipts, and demonstrates stale-plan detection via
+`REPLAN_REQUIRED`. See [`specs/PRD.md`](specs/PRD.md) §1 for the full
+prototype-vs-production framing.
 
 **No LLM in the risk decision. No ServiceNow mutation. Read-only.**
 (Optional post-decision LLM annotation via `--explain` — see P2 #24 below.)

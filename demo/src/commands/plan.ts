@@ -75,8 +75,8 @@ export async function runPlan(opts: PlanOptions): Promise<PlanReceipt> {
     // the whole snapshot the reviewer approved against. A live target
     // adapter that could not retrieve every relevantRef (network partial,
     // permission denied on some resource, pagination cutoff) MUST emit
-    // 'PARTIAL' — per PRD §16, INCOMPLETE != SAFE. Consumers should refuse
-    // to gate on a PARTIAL plan.
+    // 'INCOMPLETE' — per PRD §16, INCOMPLETE != SAFE. Consumers must
+    // refuse to gate on an INCOMPLETE plan.
     coverage: 'COMPLETE',
     summary,
     relevantRefs: relevantRefs,

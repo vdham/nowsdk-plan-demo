@@ -161,8 +161,9 @@ To see the machine-consumable receipt:
 
 ```bash
 cat plan.json | head -40
-# artifactDigest, targetFingerprint, changeSetDigest, rulesVersion,
-# coverage, summary, relevantRefs, changes, findings
+# artifactDigest, targetFingerprint, changeSetDigest,
+# rulesVersion, resolverVersion, coverage, summary,
+# relevantRefs, changes, findings
 ```
 
 Exit codes: `0` OK · `1` runtime error · `2` `REPLAN_REQUIRED` · `3` `--fail-on` threshold met.
