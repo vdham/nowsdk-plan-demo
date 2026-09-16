@@ -41,6 +41,29 @@ rules — verified by test.
 No ServiceNow instance is required — the core flow runs entirely
 offline against JSON fixtures.
 
+## Terminology
+
+Three names to keep straight:
+
+- **`now-sdk plan` / `now-sdk verify`** — the *proposed* commands this
+  prototype is pitching. They **do not exist** in the real ServiceNow
+  SDK today (v4.12.0 ships `auth`, `init`, `download`, `build`,
+  `install`, `dependencies`, `transform`, `clean`, `pack`, `explain`,
+  `query`, `cicd` — no `plan`, no `verify`).
+- **`sn-plan-demo`** — the standalone binary in this repo that
+  demonstrates what the proposed `now-sdk plan` / `now-sdk verify`
+  would do. Independent from `now-sdk`; runs offline against fixtures
+  and read-only SDK output.
+- **`npm run plan`, `npm run verify`, `npm run plan:explain`, etc.**
+  — local-development shortcuts that invoke `sn-plan-demo` via `tsx`.
+  Used throughout this README because they work immediately after
+  `npm install` without a global-install step.
+
+`npm run plan` and `sn-plan-demo plan` execute identical code — see
+`bin` and `scripts` in [`demo/package.json`](demo/package.json).
+The only real `now-sdk` command this prototype actually invokes is
+`now-sdk build`, when you use `--desired-source sdk-build`.
+
 ## The demo scenario
 
 Two fixtures under [`demo/fixtures/`](demo/fixtures/) model the state
@@ -68,6 +91,11 @@ npm install
 # Plan the local app against the "as-reviewed" target
 npm run plan -- --target-fixture fixtures/target-v1.json --out plan.json
 ```
+
+> **Cleaner CLI for presentations:** run `npm link` once from `demo/`
+> to expose the binary in your `PATH`. Then you can use
+> `sn-plan-demo plan --target-fixture ...` (no `npm run --` prefix,
+> no `tsx` noise in the output). Undo with `npm unlink -g sn-plan-demo`.
 
 Expected output:
 
