@@ -29,36 +29,156 @@ deterministic engine to annotate each finding with plain-English
 context. The LLM cannot change severity, add findings, or trigger
 rules — verified by test.
 
+## Prerequisites
+
+| Requirement | Version | Notes |
+|---|---|---|
+| Node.js | 20+ | `node --version` to check |
+| npm | 10+ (ships with Node 20) | |
+| git | any recent | |
+| `ANTHROPIC_API_KEY` | — | Optional. Only needed for `--explain` / `plan:explain`. Get one at [console.anthropic.com](https://console.anthropic.com) → API Keys. |
+
+No ServiceNow instance is required — the core flow runs entirely
+offline against JSON fixtures.
+
+## The demo scenario
+
+Two fixtures under [`demo/fixtures/`](demo/fixtures/) model the state
+of a hypothetical ServiceNow instance:
+
+- **`target-v1.json`** — the target as it looked when you generated
+  the plan. Contains a `datetime_field`, an ACL requiring the
+  `x_helloworld.user` role, and a Business Rule with `when: "after"`.
+- **`target-v2.json`** — same instance, but *after* another admin
+  granted `x_helloworld.manager` to the ACL. Simulates target drift
+  between review and execution.
+
+The local application (either from
+[`demo/fixtures/desired.json`](demo/fixtures/desired.json) or from
+`now-sdk build`) intends four changes: add `priority` field, delete
+`datetime_field`, empty the ACL role list, flip the Business Rule to
+`when: "before"`. That produces the demo's three risk findings.
+
 ## Quick start
 
 ```bash
 cd demo
 npm install
 
-# Plan the local app against a target-instance fixture
+# Plan the local app against the "as-reviewed" target
 npm run plan -- --target-fixture fixtures/target-v1.json --out plan.json
-
-# Verify the plan against the same target (READY)
-npm run verify -- --plan plan.json --target-fixture fixtures/target-v1.json
-
-# Same plan against a drifted target (REPLAN_REQUIRED, exit 2)
-npm run verify -- --plan plan.json --target-fixture fixtures/target-v2.json
 ```
 
-Optional variants:
+Expected output:
+
+```
+App: ServiceNow Hello World
+Target: fixtures/target-v1.json
+
++ 1 CREATE
+~ 2 MODIFY
+- 1 DELETE
+
+Coverage: COMPLETE
+Highest risk: HIGH
+
+CREATE
+  priority
+
+HIGH  SN-ACL-004
+  ACL roles: [x_helloworld.user] -> []
+
+MED   SN-BR-011
+  when: after -> before
+
+HIGH  SN-TBL-002
+  Delete field datetime_field
+
+Plan: pl_51ac2e
+```
+
+Then:
 
 ```bash
-# Pull desired state from real `now-sdk build` XML output instead of fixture
-npm run plan:from-source -- --target-fixture fixtures/target-v1.json --out plan.json
+# Verify against the same target — target hasn't drifted, plan is fresh
+npm run verify -- --plan plan.json --target-fixture fixtures/target-v1.json
+# → Status: READY, exit 0
 
-# CI gate: exit 3 if any finding meets the threshold
-npm run plan -- --target-fixture fixtures/target-v1.json --out plan.json --fail-on high
+# Verify against the drifted target — the "another admin changed it" case
+npm run verify -- --plan plan.json --target-fixture fixtures/target-v2.json
+# → Status: REPLAN_REQUIRED, exit 2
+```
 
-# LLM annotations (requires ANTHROPIC_API_KEY)
-npm run plan:explain -- --target-fixture fixtures/target-v1.json --out plan.json
+To see the machine-consumable receipt:
+
+```bash
+cat plan.json | head -40
+# artifactDigest, targetFingerprint, changeSetDigest, rulesVersion,
+# coverage, summary, relevantRefs, changes, findings
 ```
 
 Exit codes: `0` OK · `1` runtime error · `2` `REPLAN_REQUIRED` · `3` `--fail-on` threshold met.
+
+## Verifying your setup
+
+```bash
+cd demo
+npm test        # 36 tests; ~4 seconds
+npm run typecheck
+```
+
+If both pass, everything works.
+
+## Optional variants
+
+### Pull desired state from real `now-sdk build` XML output
+
+This uses the *actual* Hello World SDK application (forked into
+[`demo/app/`](demo/app/)) as the source of desired resources, parsing
+the XML that `now-sdk build` emits. Two-step setup the first time:
+
+```bash
+cd demo
+npm --prefix app install         # install the app's own devDependencies (@servicenow/sdk)
+npm run build:app                # run `now-sdk build` in app/, emits dist/app/update/*.xml
+npm run plan:from-source -- --target-fixture fixtures/target-v1.json --out plan.json
+```
+
+Produces an identical plan (same 3 findings, same operation counts) to
+the fixture path — because both adapters normalize into the same
+`Resource[]` shape.
+
+### CI gate — fail the build on HIGH findings
+
+```bash
+npm run plan -- --target-fixture fixtures/target-v1.json --out plan.json --fail-on high
+echo $?          # 3, because SN-ACL-004 and SN-TBL-002 are HIGH
+```
+
+Exit 3 is distinct from exit 2 (`REPLAN_REQUIRED`), so a CI pipeline
+can gate on both differently.
+
+### LLM annotations (`--explain`)
+
+Requires `ANTHROPIC_API_KEY`. Layers a Claude Opus 4.7 call *after*
+the deterministic engine to annotate each finding with a plain-English
+explanation, blast-radius note, and remediation steps.
+
+```bash
+export ANTHROPIC_API_KEY="sk-ant-..."      # or put in your shell profile
+npm run plan:explain -- --target-fixture fixtures/target-v1.json --out plan.json
+```
+
+Cost per plan: ~$0.05–$0.20 (3 findings, ~1K in + 1K out on Opus 4.7).
+Override the model to save cost:
+
+```bash
+ANTHROPIC_EXPLAIN_MODEL=claude-haiku-4-5 npm run plan:explain -- ...
+```
+
+The LLM **cannot** trigger rules, add findings, or change severity —
+its output is `Finding.explanation` only, and it's excluded from every
+fingerprint. Verified by [`demo/tests/explain.test.ts`](demo/tests/explain.test.ts).
 
 ## Reading order
 
