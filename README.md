@@ -172,7 +172,7 @@ Exit codes: `0` OK · `1` runtime error · `2` `REPLAN_REQUIRED` · `3` `--fail-
 
 ```bash
 cd demo
-npm test        # 39 tests; ~4 seconds
+npm test        # 40 tests; ~4 seconds
 npm run typecheck
 ```
 
@@ -280,7 +280,7 @@ See [`specs/PRD.md`](specs/PRD.md) §13 and §25 for the boundary and
     ├── app/                     ← forked ServiceNow Hello World SDK app
     ├── src/                     ← CLI, adapters, planner, rules, explain
     ├── fixtures/                ← desired + target v1/v2 JSON
-    └── tests/                   ← 39 tests
+    └── tests/                   ← 40 tests
 ```
 
 ## Status

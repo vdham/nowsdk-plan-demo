@@ -79,7 +79,7 @@ demo/
 │   ├── target-v1.json              # baseline instance
 │   └── target-v2.json              # v1 + one ACL role added (drift)
 │
-└── tests/                          # 36 tests, all passing
+└── tests/                          # 40 tests, all passing
 ```
 
 ### Deterministic risk rules
@@ -141,7 +141,7 @@ the deterministic risk engine to annotate each finding with plain-English
 - Model override via `ANTHROPIC_EXPLAIN_MODEL` env var (Sonnet 4.6 /
   Haiku 4.5 are cheaper alternatives)
 
-### Test coverage (36 tests)
+### Test coverage (40 tests)
 
 - `diff.test.ts` — CREATE / MODIFY / DELETE (explicit only) / NOOP + reordering stability
 - `rules.test.ts` — each of 3 rules; negative cases

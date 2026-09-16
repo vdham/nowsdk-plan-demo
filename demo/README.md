@@ -2,8 +2,12 @@
 
 Prototype of the proposed `now-sdk plan` workflow.
 
-Demonstrates `build → plan → review → verify` against a Hello World SDK
-application forked from `ServiceNow/sdk-examples/hello-world-sample`, with:
+Demonstrates the **prototype flow** (`build → plan → review →
+verify-target-freshness`) against a Hello World SDK application forked
+from `ServiceNow/sdk-examples/hello-world-sample`. The **proposed
+production flow** is `build → plan → review → install --plan` — see
+[`../README.md`](../README.md) *Terminology* for why production verify
+lives inside install rather than as a separate command. Features:
 
 - deterministic `CREATE / MODIFY / DELETE / NOOP` operations
 - three deterministic risk rules (no LLM)
