@@ -1,0 +1,57 @@
+{
+  "resources": [
+    {
+      "id": "field:x_helloworld_tableone.string_field",
+      "type": "field",
+      "name": "string_field",
+      "attributes": {
+        "table": "x_helloworld_tableone",
+        "type": "string",
+        "label": "String Field",
+        "mandatory": true
+      }
+    },
+    {
+      "id": "field:x_helloworld_tableone.integer_field",
+      "type": "field",
+      "name": "integer_field",
+      "attributes": {
+        "table": "x_helloworld_tableone",
+        "type": "integer",
+        "label": "Integer Field",
+        "mandatory": true
+      }
+    },
+    {
+      "id": "field:x_helloworld_tableone.datetime_field",
+      "type": "field",
+      "name": "datetime_field",
+      "attributes": {
+        "table": "x_helloworld_tableone",
+        "type": "date_time",
+        "label": "Date Time Field"
+      }
+    },
+    {
+      "id": "acl:x_helloworld_tableone_read",
+      "type": "acl",
+      "name": "x_helloworld_tableone read",
+      "attributes": {
+        "table": "x_helloworld_tableone",
+        "operation": "read",
+        "type": "record",
+        "roles": ["x_helloworld.user"]
+      }
+    },
+    {
+      "id": "business_rule:x_helloworld_tableone_state_change",
+      "type": "business_rule",
+      "name": "State Change",
+      "attributes": {
+        "table": "x_helloworld_tableone",
+        "when": "after",
+        "active": true
+      }
+    }
+  ]
+}

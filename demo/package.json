@@ -1,0 +1,30 @@
+{
+  "name": "sn-plan-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Fixture-first prototype for the proposed now-sdk plan workflow (5-minute PM panel demo).",
+  "bin": {
+    "sn-plan-demo": "./src/cli.ts"
+  },
+  "scripts": {
+    "plan": "tsx src/cli.ts plan",
+    "verify": "tsx src/cli.ts verify",
+    "build:app": "npm --prefix app run build",
+    "plan:from-source": "npm run build:app && tsx src/cli.ts plan --desired-source sdk-build",
+    "plan:explain": "tsx src/cli.ts plan --explain",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.126.0",
+    "commander": "^12.1.0",
+    "fast-xml-parser": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  }
+}

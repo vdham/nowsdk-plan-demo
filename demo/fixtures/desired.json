@@ -1,0 +1,63 @@
+{
+  "resources": [
+    {
+      "id": "field:x_helloworld_tableone.string_field",
+      "type": "field",
+      "name": "string_field",
+      "attributes": {
+        "table": "x_helloworld_tableone",
+        "type": "string",
+        "label": "String Field",
+        "mandatory": true
+      }
+    },
+    {
+      "id": "field:x_helloworld_tableone.integer_field",
+      "type": "field",
+      "name": "integer_field",
+      "attributes": {
+        "table": "x_helloworld_tableone",
+        "type": "integer",
+        "label": "Integer Field",
+        "mandatory": true
+      }
+    },
+    {
+      "id": "field:x_helloworld_tableone.priority",
+      "type": "field",
+      "name": "priority",
+      "attributes": {
+        "table": "x_helloworld_tableone",
+        "type": "integer",
+        "label": "Priority"
+      }
+    },
+    {
+      "id": "acl:x_helloworld_tableone_read",
+      "type": "acl",
+      "name": "x_helloworld_tableone read",
+      "attributes": {
+        "table": "x_helloworld_tableone",
+        "operation": "read",
+        "type": "record",
+        "roles": []
+      }
+    },
+    {
+      "id": "business_rule:x_helloworld_tableone_state_change",
+      "type": "business_rule",
+      "name": "State Change",
+      "attributes": {
+        "table": "x_helloworld_tableone",
+        "when": "before",
+        "active": true
+      }
+    }
+  ],
+  "explicitDeletes": [
+    {
+      "id": "field:x_helloworld_tableone.datetime_field",
+      "type": "field"
+    }
+  ]
+}

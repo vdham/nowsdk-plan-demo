@@ -1,0 +1,11 @@
+import { Record } from '@servicenow/sdk/core'
+
+Record({
+    table: 'x_helloworld_tableone',
+    $id: Now.ID['x_helloworld_tableone_record1'],
+    data: {
+        string_field: 'Hello World 1',
+        integer_field: 1,
+        priority: 3,
+    },
+})

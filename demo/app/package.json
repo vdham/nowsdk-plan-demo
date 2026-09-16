@@ -1,0 +1,16 @@
+{
+  "name": "hello-world-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Forked ServiceNow Hello World sample with added ACL + Business Rule for the sn-plan-demo.",
+  "author": "ServiceNow (original), demo modifications",
+  "license": "ISC",
+  "scripts": {
+    "build": "now-sdk build"
+  },
+  "devDependencies": {
+    "@servicenow/glide": "27.0.5",
+    "@servicenow/sdk": "4.12.0",
+    "typescript": "5.8.2"
+  }
+}

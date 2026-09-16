@@ -1,0 +1,9 @@
+# Cloned upstream reference — inspected for identities, not part of our source.
+sdk-examples/
+
+# Local dependency and build output (also covered by demo/.gitignore).
+node_modules/
+demo/plan.json
+demo/dist/
+*.log
+.DS_Store
